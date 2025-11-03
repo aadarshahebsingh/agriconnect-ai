@@ -32,12 +32,46 @@ const schema = defineSchema(
       role: v.optional(roleValidator), // role of the user. do not remove
     }).index("email", ["email"]), // index for the email. do not remove or modify
 
-    // add other tables here
+    crops: defineTable({
+      name: v.string(),
+      type: v.string(),
+      imageUrl: v.string(),
+      farmerId: v.id("users"),
+      farmerName: v.string(),
+      location: v.object({
+        lat: v.number(),
+        lng: v.number(),
+        address: v.string(),
+      }),
+      harvestDate: v.string(),
+      quantity: v.number(),
+      unit: v.string(),
+      pricePerUnit: v.number(),
+      diseaseStatus: v.optional(v.object({
+        detected: v.boolean(),
+        name: v.optional(v.string()),
+        confidence: v.optional(v.number()),
+        suggestion: v.optional(v.string()),
+      })),
+      published: v.boolean(),
+      views: v.number(),
+      sales: v.number(),
+    }),
 
-    // tableName: defineTable({
-    //   ...
-    //   // table fields
-    // }).index("by_field", ["field"])
+    orders: defineTable({
+      cropId: v.id("crops"),
+      customerId: v.id("users"),
+      customerName: v.string(),
+      farmerId: v.id("users"),
+      quantity: v.number(),
+      totalPrice: v.number(),
+      status: v.union(
+        v.literal("pending"),
+        v.literal("confirmed"),
+        v.literal("delivered"),
+        v.literal("cancelled")
+      ),
+    }),
   },
   {
     schemaValidation: false,
